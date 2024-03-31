@@ -3,28 +3,44 @@ name: Go Build and Commit
 on:
   push:
     branches:
-      - main  # 或者你使用的是哪个分支
+      - main  # 或你用于开发的分支
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Checkout main repository
       uses: actions/checkout@v2
-    - name: Set up Go
-      uses: actions/setup-go@v2
       with:
-        go-version: '1.20'  # Specify the Go version
-    - name: Download Go modules
+        path: 'main_repo'
+    
+    - name: Clone and Build WarpGPT
       run: |
+        # Clone WarpGPT repository
         git clone https://github.com/oliverkirk-sudo/WarpGPT
         cd WarpGPT
+        
+        # Download Go modules and build
         go mod download
         go build -o warpgpt
-    - name: Commit binary
+        
+        # Move the binary to the main repository directory
+        mv warpgpt ../main_repo/
+      shell: bash
+
+    - name: Commit and Push binary to main repository
       run: |
+        cd main_repo
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add ./WarpGPT/warpgpt
-        git commit -m "Add built binary"
-        git push
+        
+        # Check if binary exists and commit it
+        if [ -f "./warpgpt" ]; then
+          git add warpgpt
+          git commit -m "Add built binary"
+          git push
+        else
+          echo "Binary not found, nothing to commit."
+          exit 1
+        fi
+      shell: bash
