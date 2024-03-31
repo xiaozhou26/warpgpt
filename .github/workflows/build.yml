@@ -1,0 +1,30 @@
+name: Go Build and Commit
+
+on:
+  push:
+    branches:
+      - main  # 或者你使用的是哪个分支
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'  # Specify the Go version
+    - name: Download Go modules
+      run: |
+        git clone https://github.com/oliverkirk-sudo/WarpGPT
+        cd WarpGPT
+        go mod download
+        go build -o warpgpt
+    - name: Commit binary
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add warpgpt
+        git commit -m "Add built binary"
+        git push
