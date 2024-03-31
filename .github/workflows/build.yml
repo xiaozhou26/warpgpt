@@ -3,7 +3,7 @@ name: Go Build and Commit
 on:
   push:
     branches:
-      - main  # 或你用于开发的分支
+      - main  # Or your development branch
 
 jobs:
   build:
@@ -14,18 +14,20 @@ jobs:
       with:
         path: 'main_repo'
     
-    - name: Clone and Build main
+    - name: Clone and Build WarpGPT for Windows AMD64
       run: |
-        # Clone main repository
-        git clone https://github.com/xiaozhou26/deeplx-pro-go
-        cd deeplx-pro-go
+        # Clone WarpGPT repository
+        git clone https://github.com/oliverkirk-sudo/WarpGPT
+        cd WarpGPT
         
-        # Download Go modules and build
+        # Download Go modules
         go mod download
-        go build -o main
+
+        # Build for Windows AMD64
+        GOOS=windows GOARCH=amd64 go build -o warpgpt.exe
         
         # Move the binary to the main repository directory
-        mv main ../main_repo/
+        mv warpgpt.exe ../main_repo/
       shell: bash
 
     - name: Commit and Push binary to main repository
@@ -35,9 +37,9 @@ jobs:
         git config --local user.name "GitHub Action"
         
         # Check if binary exists and commit it
-        if [ -f "./main" ]; then
-          git add main
-          git commit -m "Add built binary"
+        if [ -f "./warpgpt.exe" ]; then
+          git add warpgpt.exe
+          git commit -m "Add built binary for Windows AMD64"
           git push
         else
           echo "Binary not found, nothing to commit."
