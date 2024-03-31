@@ -14,18 +14,18 @@ jobs:
       with:
         path: 'main_repo'
     
-    - name: Clone and Build WarpGPT
+    - name: Clone and Build main
       run: |
-        # Clone WarpGPT repository
-        git clone https://github.com/oliverkirk-sudo/WarpGPT
-        cd WarpGPT
+        # Clone main repository
+        git clone https://github.com/xiaozhou26/deeplx-pro-go
+        cd deeplx-pro-go
         
         # Download Go modules and build
         go mod download
-        go build -o warpgpt
+        go build -o main
         
         # Move the binary to the main repository directory
-        mv warpgpt ../main_repo/
+        mv main ../main_repo/
       shell: bash
 
     - name: Commit and Push binary to main repository
@@ -35,8 +35,8 @@ jobs:
         git config --local user.name "GitHub Action"
         
         # Check if binary exists and commit it
-        if [ -f "./warpgpt" ]; then
-          git add warpgpt
+        if [ -f "./main" ]; then
+          git add main
           git commit -m "Add built binary"
           git push
         else
